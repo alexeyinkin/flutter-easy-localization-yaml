@@ -9,6 +9,23 @@ It allows you to drop unwanted dependencies from importing many other loaders yo
 
 It also has the `package` argument for assets from packages.
 
+## Example
+
+Follow the easy_localization docs except adding the loader:
+
+```dart
+runApp(
+  EasyLocalization(
+    assetLoader: const YamlAssetLoader(directory: 'assets/translations'), // NEW
+    fallbackLocale: const Locale('en'),
+    path: 'unused',
+    startLocale: const Locale('en'),
+    supportedLocales: const [Locale('en')],
+    child: MyApp(),
+  ),
+);
+```
+
 ## Tech Support, Jobs, and Education
 
 Please join my Telegram channel for announcements, Flutter jobs, articles, talks, and more:

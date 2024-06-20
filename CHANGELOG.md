@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Added `ignoreErrors` parameter.
+
 ## 0.1.1
 
 * Added an example.

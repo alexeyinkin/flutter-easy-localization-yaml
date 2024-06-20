@@ -7,15 +7,23 @@ import 'package:yaml/yaml.dart';
 
 /// Loads a YAML file.
 class YamlAssetLoader extends AssetLoader {
-  /// The package name, null for non-package assets.
-  final String? package;
-
   /// The directory for YAML files, from the [package] or app root.
   final String directory;
+
+  /// Whether to ignore errors if a translation is not found.
+  /// The default is to throw an exception.
+  ///
+  /// Set this to true when merging multiple assets from different packages
+  /// to allow an app to cover up for a missing translation in a package.
+  final bool ignoreErrors;
+
+  /// The package name, null for non-package assets.
+  final String? package;
 
   // ignore: public_member_api_docs
   const YamlAssetLoader({
     required this.directory,
+    this.ignoreErrors = false,
     this.package,
   });
 
@@ -24,8 +32,22 @@ class YamlAssetLoader extends AssetLoader {
   Future<Map<String, dynamic>> load(String basePath, Locale locale) async {
     final localePath = getFilePath(locale, basePath: basePath);
     log('easy localization: YamlAssetLoader loading $localePath');
-    final yamlMap = loadYaml(await rootBundle.loadString(localePath));
-    return _yamlMapToMap(yamlMap);
+
+    try {
+      final yamlMap = loadYaml(await rootBundle.loadString(localePath));
+      return _yamlMapToMap(yamlMap);
+      // ignore: avoid_catches_without_on_clauses
+    } catch (ex) {
+      log(
+        'easy localization: YamlAssetLoader ignoring a missing asset $localePath',
+      );
+
+      if (ignoreErrors) {
+        return const {};
+      }
+
+      rethrow;
+    }
   }
 
   /// Returns the file path for the locale.
